@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using MvcMovie.Models;
 
@@ -14,12 +15,16 @@ public class MoviesController : Controller
 
     // GET: MOVIES
     // No need for [HttpPost], because this action does not modify data, only used to display data.
-    public async Task<IActionResult> Index(string searchString)    
+    public async Task<IActionResult> Index(string movieGenre, string searchString)    
     {
         if (_context.Movie == null)
         {
             return Problem("Entity set 'MvcMovieContext.Movie'  is null.");
         }
+
+        IQueryable<string> genreQuery = from m in _context.Movie
+                                        orderby m.Genre
+                                        select m.Genre; // LINQ query to select the Genre property of all movies, and order them by genre.>
 
         var movies = from m in _context.Movie 
                      select m; // LINQ query to select all movies from the database.
@@ -28,6 +33,17 @@ public class MoviesController : Controller
         {
             movies = movies.Where(s => s.Title!.Contains(searchString)); // EF Core translates this LINQ query to SQL LIKE query, case insensitive by default.
         }
+
+        if (!String.IsNullOrEmpty(movieGenre)) // If the movie genre is not null or empty, filter the movies to include only those whose genre matches the selected genre.
+        {
+            movies = movies.Where(s => s.Genre == movieGenre); // EF Core translates this LINQ query to SQL WHERE clause.
+        }
+
+        var movieGenreVM = new MovieGenreViewModel
+        {
+            Genres = new SelectList(await genreQuery.Distinct().ToListAsync()), // Get the distinct genres from the database, and create a SelectList for the dropdown list in the view.
+            Movies = await movies.ToListAsync() // Execute the query and get the list of movies to display in the view.
+        };
 
         return View(await movies.ToListAsync());
     }
