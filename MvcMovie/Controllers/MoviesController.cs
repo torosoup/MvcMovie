@@ -13,9 +13,22 @@ public class MoviesController : Controller
     }
 
     // GET: MOVIES
-    public async Task<IActionResult> Index()    
+    public async Task<IActionResult> Index(string searchString)    
     {
-        return View(await _context.Movie.ToListAsync());
+        if (_context.Movie == null)
+        {
+            return Problem("Entity set 'MvcMovieContext.Movie'  is null.");
+        }
+
+        var movies = from m in _context.Movie 
+                     select m; // LINQ query to select all movies from the database.
+
+        if (!String.IsNullOrEmpty(searchString)) // If the search string is not null or empty, filter the movies to include only those whose title contains the search string.
+        {
+            movies = movies.Where(s => s.Title!.Contains(searchString));
+        }
+
+        return View(await movies.ToListAsync());
     }
 
     // GET: MOVIES/Details/5
