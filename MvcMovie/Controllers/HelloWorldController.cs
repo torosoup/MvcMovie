@@ -6,9 +6,9 @@ namespace MvcMovie.Controllers
     public class HelloWorldController : Controller
     {
         // GET: /HelloWorld/
-        public string Index() // Every public method is callable as an HTTP endpoint, so the method name is used as the URL path. The default routing logic is /[Controller]/[ActionName]/[Parameters], so the URL for this action method is /HelloWorld/Index (parameters not used yet). If you omit the action name, it will default to Index, so /HelloWorld will also work.
+        public IActionResult Index() // Every public method is callable as an HTTP endpoint, so the method name is used as the URL path. The default routing logic is /[Controller]/[ActionName]/[Parameters], so the URL for this action method is /HelloWorld/Index (parameters not used yet). If you omit the action name, it will default to Index, so /HelloWorld will also work.
         {
-            return "This is my default action...";
+            return View(); // Calls the controller's View() method, and uses view tempelate to generate a HTML response.
         }
         // GET: /HelloWorld/Welcome/
         public string Welcome(string name, int numTimes = 1, int id = 4)
