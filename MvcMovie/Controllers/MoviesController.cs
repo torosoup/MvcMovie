@@ -13,6 +13,7 @@ public class MoviesController : Controller
     }
 
     // GET: MOVIES
+    // No need for [HttpPost], because this action does not modify data, only used to display data.
     public async Task<IActionResult> Index(string searchString)    
     {
         if (_context.Movie == null)
@@ -25,7 +26,7 @@ public class MoviesController : Controller
 
         if (!String.IsNullOrEmpty(searchString)) // If the search string is not null or empty, filter the movies to include only those whose title contains the search string.
         {
-            movies = movies.Where(s => s.Title!.Contains(searchString));
+            movies = movies.Where(s => s.Title!.Contains(searchString)); // EF Core translates this LINQ query to SQL LIKE query, case insensitive by default.
         }
 
         return View(await movies.ToListAsync());
