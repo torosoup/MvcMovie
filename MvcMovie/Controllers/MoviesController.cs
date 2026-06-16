@@ -45,7 +45,7 @@ public class MoviesController : Controller
             Movies = await movies.ToListAsync() // Execute the query and get the list of movies to display in the view.
         };
 
-        return View(await movies.ToListAsync());
+        return View(movieGenreVM);
     }
 
     // GET: MOVIES/Details/5
