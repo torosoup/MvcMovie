@@ -7,4 +7,9 @@
 
 <h2>My Movie List</h2>
 
-<p>Hello from our View Template!</p>l>
+<ul>
+    @for (int i = 0; i < (int)ViewData["NumTimes"]!; i++)
+    {
+        <li>@ViewData["Message"]</li>
+    }
+</ul>

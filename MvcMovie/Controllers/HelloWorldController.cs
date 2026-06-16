@@ -11,11 +11,11 @@ namespace MvcMovie.Controllers
             return View(); // Calls the controller's View() method, and uses view tempelate to generate a HTML response.
         }
         // GET: /HelloWorld/Welcome/
-        public string Welcome(string name, int numTimes = 1, int id = 4)
+        public IActionResult Welcome(string name, int numTimes = 1)
         {
-            return HtmlEncoder.Default.Encode($"Hello {name}, NumTimes is: {numTimes}. ID: {id}"); // /HelloWorld/Welcome?name=Rick&numTimes=4 - Passing parameter information from the URL to the controller
-                                                                                                   // HtmlEncoder.Default.Encode() is used to prevent malicious input, such as cross-site scripting or through JavaScript.
-                                                                                                   // /HelloWorld/Welcome/3?name=Rick&numTimes=4 - ID is default convention, comes before the ? since its defined in Program.cs as part of the default routing format (/id?)
+            ViewData["Message"] = "Hello " + name; // Adding parameter values to the ViewData dictionary, which is used to pass data from the controller to the view. The view can access these values using the keys "Message" and "NumTimes".  Dynamic object.
+            ViewData["NumTimes"] = numTimes;
+            return View();
         }
     }
 }
