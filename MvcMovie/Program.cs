@@ -8,6 +8,7 @@ builder.Services.AddDbContext<MvcMovieContext>(options => options.UseSqlServer(c
     
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddValidation();
 
 var app = builder.Build();
 
