@@ -1,4 +1,5 @@
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -67,6 +68,7 @@ public class MoviesController : Controller
     }
 
     // GET: MOVIES/Create
+    [Authorize] // Only authenticated users can access the Create action to create new movies.
     public IActionResult Create()
     {
         return View();
@@ -75,6 +77,7 @@ public class MoviesController : Controller
     // POST: MOVIES/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Genre,Price,Rating")] Movie movie)
@@ -89,6 +92,7 @@ public class MoviesController : Controller
     }
 
     // GET: MOVIES/Edit/5
+    [Authorize]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -107,6 +111,7 @@ public class MoviesController : Controller
     // POST: MOVIES/Edit/5
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [Authorize]
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int? id, [Bind("Id,Title,ReleaseDate,Genre,Price")] Movie movie)
@@ -140,6 +145,7 @@ public class MoviesController : Controller
     }
 
     // GET: MOVIES/Delete/5
+    [Authorize]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -158,6 +164,7 @@ public class MoviesController : Controller
     }
 
     // POST: MOVIES/Delete/5
+    [Authorize]
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int? id)
