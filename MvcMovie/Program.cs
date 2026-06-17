@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MvcMovie.Models; // Add MvcMovies.Data later as well
@@ -5,7 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("MvcMovieContext") ?? throw new InvalidOperationException("Connection string 'MvcMovieContext' not found.");
 
 builder.Services.AddDbContext<MvcMovieContext>(options => options.UseSqlServer(connectionString));
-    
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddEntityFrameworkStores<MvcMovieContext>();
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddValidation();
