@@ -1,3 +1,4 @@
 <Solution>
+  <Project Path="MvcMovie.Tests/MvcMovie.Tests.csproj" Id="6af15e17-9f11-4af6-83a6-ec6495011683" />
   <Project Path="MvcMovie/MvcMovie.csproj" />
 </Solution>
