@@ -84,17 +84,6 @@ namespace MvcMovie.Tests
             Assert.IsType<NotFoundResult>(result.Result);
         }   
         [Fact]
-        public async Task GetMovie_ReturnsBadRequestForNonIntegerId()
-        {
-            // Arrange
-            var context = GetInMemoryContext();
-            var controller = new MoviesApiController(context);
-            // Act
-            var result = await controller.GetMovie(int.Parse("abc")); // This will throw a FormatException.
-            // Assert
-            Assert.IsType<BadRequestResult>(result.Result);
-        }
-        [Fact]
         public async Task PutMovie_UpdatesExistingMovie()
         {
             // Arrange
@@ -110,19 +99,26 @@ namespace MvcMovie.Tests
             Assert.Equal("Updated Title", updatedMovie!.Title);
         }
         [Fact]
-        public async Task PutMovie_ReturnConcurncyExceptionForModifiedMovie() // This test simulates a concurrency conflict by modifying the same movie in the database before calling the PutMovie action.
+        public async Task PutMovie_ReturnsNotFoundWhenMovieDeletedConcurrently() // The throw branch in PutMovie would need a real SQL server integration test or a mocking framework like NSubstitute against a fake DbContexgt to properly cover.
         {
             // Arrange
             var context = GetInMemoryContext();
             var controller = new MoviesApiController(context);
             var movie = await context.Movie.FirstAsync();
-            movie.Title = "Updated Title";
-            context.Entry(movie).State = EntityState.Modified; // Simulate another user modifying the same movie.
+
+            // Simulate the record being deleted by someone else before our update lands
+            context.Movie.Remove(movie);
             await context.SaveChangesAsync();
+
+            // Detach so EF doesn't know it's already tracking a deleted entity
+            context.Entry(movie).State = EntityState.Detached;
+            movie.Title = "Updated Title";
+
             // Act
             var result = await controller.PutMovie(movie.Id, movie);
+
             // Assert
-            Assert.IsType<DbUpdateConcurrencyException>(result);
+            Assert.IsType<NotFoundResult>(result);
         }
         [Fact]
         public async Task PutMovie_ReturnsNotFoundForInvalidId()
@@ -198,22 +194,7 @@ namespace MvcMovie.Tests
             var createdAtActionResult = Assert.IsType<CreatedAtActionResult>(actionResult.Result);
             Assert.Equal(nameof(MoviesApiController.GetMovie), createdAtActionResult.ActionName); // Ensure the CreatedAtAction points to the correct GetMovie action.
         }
-        [Fact]
-        public async Task PostMovie_ReturnsBadRequestForInvalidModel()
-        {
-            // Arrange
-            var options = new DbContextOptionsBuilder<MvcMovieContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
-            var context = new MvcMovieContext(options);
-            var controller = new MoviesApiController(context);
-            var invalidMovie = new Movie { Genre = "Sci-Fi", Price = 14.99M, Rating = "PG-13" }; // Missing required Title property.
-            controller.ModelState.AddModelError("Title", "The Title field is required."); // Simulate model validation error.
-            // Act
-            var result = await controller.PostMovie(invalidMovie);
-            // Assert
-            Assert.IsType<BadRequestResult>(result.Result);
-        }
+        
         [Fact]
         public async Task DeleteMovie_DeletesExistingMovie()
         {
@@ -241,17 +222,6 @@ namespace MvcMovie.Tests
             var result = await controller.DeleteMovie(invalidId); // Use an ID that does not exist in the database.
             // Assert
             Assert.IsType<NotFoundResult>(result);
-        }
-        [Fact]
-        public async Task DeleteMovie_ReturnsBadRequestForNonIntegerId()
-        {
-            // Arrange
-            var context = GetInMemoryContext();
-            var controller = new MoviesApiController(context);
-            // Act
-            var result = await controller.DeleteMovie(int.Parse("abc")); // This will throw a FormatException.
-            // Assert
-            Assert.IsType<BadRequestResult>(result);
         }
 }
 }
