@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MvcMovie.Models;
@@ -35,6 +36,7 @@ namespace MvcMovie.Controllers
 
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<Movie>> PostMovie(Movie movie)
         {
@@ -43,6 +45,7 @@ namespace MvcMovie.Controllers
             return CreatedAtAction(nameof(GetMovie), new { id = movie.Id }, movie); // Return 201 Created with the location of the new movie.
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMovie(int id, Movie movie)
         {
@@ -69,6 +72,7 @@ namespace MvcMovie.Controllers
             return NoContent(); // Return 204 No Content to indicate successful update.
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMovie(int id)
         {
